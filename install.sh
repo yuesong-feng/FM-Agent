@@ -29,36 +29,24 @@ else
     }
 fi
 
-# --break-system-packages requires pip >= 23.0.1; upgrade if too old
+# requires pip >= 23.0.1; upgrade if too old
 pip_ver=$(python3 -m pip --version | awk '{print $2}')
 pip_major=$(echo "$pip_ver" | cut -d. -f1)
 if [[ "$pip_major" -lt 23 ]]; then
-    echo "[..] pip $pip_ver is too old (need >= 23.0.1 for --break-system-packages), upgrading..."
-    python3 -m pip install --upgrade pip || {
-        echo "[!!] could not upgrade pip."
-        exit 1
-    }
+    echo "[..] pip $pip_ver is too old (need >= 23.0.1. Upgrade it manually"
+    exit 1
 fi
 
 # ---------- Python packages ----------
 echo "[..] installing Python dependencies"
-python3 -m pip install --upgrade --break-system-packages openai
+python3 -m pip install openai
 
 # ---------- unzip ----------
 if command -v unzip &>/dev/null; then
     echo "[ok] unzip found"
 else
-    echo "[..] installing unzip"
-    if command -v apt-get &>/dev/null; then
-        sudo apt-get update && sudo apt-get install -y unzip
-    elif command -v yum &>/dev/null; then
-        sudo yum install -y unzip
-    elif command -v apk &>/dev/null; then
-        apk add --no-cache unzip
-    else
-        echo "[!!] could not install unzip. Install it manually."
-        exit 1
-    fi
+    echo "[!!] could not find unzip. Install it manually."
+    exit 1
 fi
 
 # ---------- opencode CLI ----------
