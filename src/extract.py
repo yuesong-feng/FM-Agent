@@ -462,6 +462,9 @@ def _extract_functions_indent(lines, lang_cfg):
                 j += 1
                 continue
             line_indent = len(l) - len(l.lstrip())
+            if line_indent == indent and re.match(r'\)\s*(:|->)', l.lstrip()):
+                j += 1
+                continue
             if line_indent <= indent:
                 break
             j += 1
