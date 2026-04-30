@@ -291,6 +291,7 @@ def _extract_functions_brace(lines, lang_key, lang_cfg):
     i = 0
     skip_prefixes = lang_cfg["skip_prefixes"]
     skip_kw_line = lang_cfg["skip_keywords_line"]
+    skip_next_func = False
 
     while i < len(lines):
         line = lines[i]
@@ -365,12 +366,14 @@ def _extract_functions_brace(lines, lang_key, lang_cfg):
 
         # Rust: detect fn keyword
         if lang_key == "rust":
+            if re.match(r'#\[test\]', stripped):
+                skip_next_func = True;
             m = re.match(r'(?:pub\s+)?(?:async\s+)?(?:unsafe\s+)?fn\s+(\w+)', stripped)
             if not m:
                 i += 1
                 continue
-            # skip unit test starting with #[test]
-            if i > 1 and re.match(r'#\[test\]', lines[i - 1].lstrip()):
+            if skip_next_func:
+                skip_next_func = False
                 i += 1
                 continue
             name = m.group(1)
