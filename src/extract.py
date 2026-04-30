@@ -369,6 +369,10 @@ def _extract_functions_brace(lines, lang_key, lang_cfg):
             if not m:
                 i += 1
                 continue
+            # skip unit test starting with #[test]
+            if i > 1 and re.match(r'#\[test\]', lines[i - 1].lstrip()):
+                i += 1
+                continue
             name = m.group(1)
             sig_end = i
             for look in range(i, min(i + 10, len(lines))):
